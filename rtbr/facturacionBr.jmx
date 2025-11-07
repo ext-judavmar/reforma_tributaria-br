@@ -1,0 +1,1973 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <intProp name="ThreadGroup.num_threads">2</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <longProp name="ThreadGroup.duration">60</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <intProp name="LoopController.loops">-1</intProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="timestamp" elementType="Argument">
+              <stringProp name="Argument.name">timestamp</stringProp>
+              <stringProp name="Argument.value">${__time()}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="UUID" elementType="Argument">
+              <stringProp name="Argument.name">UUID</stringProp>
+              <stringProp name="Argument.value">${__UUID()}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="sap_id" elementType="Argument">
+              <stringProp name="Argument.name">sap_id</stringProp>
+              <stringProp name="Argument.value">${__P(sap_id,94220)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="date_created" elementType="Argument">
+              <stringProp name="Argument.name">date_created</stringProp>
+              <stringProp name="Argument.value">${__P(date_created,2025-02-25T00:00:00)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="doc_date" elementType="Argument">
+              <stringProp name="Argument.name">doc_date</stringProp>
+              <stringProp name="Argument.value">${__P(doc_date,2025-03-08T00:00:00)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller"/>
+        <hashTree>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// Initialization script to set the global counter
+def initialSapId = 99894592L // Use &apos;L&apos; to denote a Long
+
+// Set the GLOBAL property using props.put()
+props.put(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;, initialSapId.toString())
+
+log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;))</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Sampler>
+          <hashTree/>
+        </hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Transaction Controller">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+        </TransactionController>
+        <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// 1. Get the current global counter value using the exact name from your setup.
+// We use props.get() for the GLOBAL counter and convert it to a Long.
+def currentSapId = props.get(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;).toLong()
+
+// 2. Define the number of IDs to generate.
+def batchSize = 8
+
+// 3. Loop 8 times to calculate and assign the sequential IDs to JMeter variables.
+for (int i = 0; i &lt; batchSize; i++) {
+    // Calculate the sequential ID for this element
+    def sapId = currentSapId + i
+    
+    // Create the variable name (e.g., sap_id_1, sap_id_2)
+    def varName = &quot;sap_id_&quot; + (i + 1)
+    
+    // CRITICAL: Store the ID into a local JMeter variable (vars)
+    // The variables sap_id_1 through sap_id_8 are now available for the HTTP Request AND the Debug Sampler.
+    vars.put(varName, sapId.toString())
+}
+
+// 4. Calculate the *NEXT* starting ID (last ID + 1)
+def nextSapId = currentSapId + batchSize
+
+// 5. Update the GLOBAL property for the next thread/iteration.
+// This is how the test maintains continuity across requests/threads.
+props.put(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;, nextSapId.toString())
+
+// Optional: Log the start ID for verification
+log.info(&quot;Starting ID for this request: &quot; + currentSapId)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 ${sap_id_8}">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+    &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
+    &quot;elementsCount&quot;: 8,&#xd;
+    &quot;elements&quot;: [&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_1},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+                &quot;fisc_year&quot;: 2025,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+                &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;expiration_date&quot;: null,&#xd;
+                &quot;group_type&quot;: null,&#xd;
+                &quot;group_value&quot;: null,&#xd;
+                &quot;provider&quot;: null,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: null,&#xd;
+                        &quot;charge_type&quot;: null,&#xd;
+                        &quot;combo&quot;: null,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;tax_code&quot;: null,&#xd;
+                        &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;division&quot;: null,&#xd;
+                        &quot;user_id&quot;: 8573078,&#xd;
+                        &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 8573078,&#xd;
+                        &quot;ref_key1&quot;: &quot;CPPOC&quot;,&#xd;
+                        &quot;ref_key2&quot;: null,&#xd;
+                        &quot;ref_key3&quot;: null,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;shipping_info&quot;: null,&#xd;
+                &quot;data_id&quot;: &quot;4081985251-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;1_performanceBr-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_2},&#xd;
+                &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+                &quot;fisc_year&quot;: 2025,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+                &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;expiration_date&quot;: null,&#xd;
+                &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+                &quot;group_value&quot;: &quot;3305109&quot;,&#xd;
+                &quot;provider&quot;: null,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: null,&#xd;
+                        &quot;charge_type&quot;: null,&#xd;
+                        &quot;combo&quot;: null,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;tax_code&quot;: null,&#xd;
+                        &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;division&quot;: null,&#xd;
+                        &quot;user_id&quot;: 183352672,&#xd;
+                        &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 183352672,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFWA&quot;,&#xd;
+                        &quot;ref_key2&quot;: null,&#xd;
+                        &quot;ref_key3&quot;: null,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;shipping_info&quot;: null,&#xd;
+                &quot;data_id&quot;: &quot;4005550410-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;2_performanceBr-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+   {&#xd;
+       &quot;send_date&quot;: &quot;2025-10-02T15:42:32.298141533&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_3},&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;3502754&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.08&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.08&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;user_id&quot;: 169678372,&#xd;
+            &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.08&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.08&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 169678372,&#xd;
+            &quot;ref_key1&quot;: &quot;CFWA&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4005711320-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;3_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+     &quot;send_date&quot;: &quot;2025-10-02T15:42:27.295286925&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SHI&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_4},&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;5300108&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.99&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;SHI&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;15.01&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;15.01&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;BFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;15.01&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;15.01&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;BFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_PRO&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.99&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;TAXES&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;ISS_H&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;0.18&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;MELI&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ISS_H&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;0.020&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;TAXES1&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;ISS_S&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;0.18&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;MELI&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ISS_S&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;0.020&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4026427979-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;4_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+{&#xd;
+    &quot;send_date&quot;: &quot;2025-10-02T15:42:37.314184021&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_5},&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;60.32&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;60.32&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPMTP&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;20.44&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;20.44&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPMTP&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPQRP&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;10.00&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;10.00&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPQRP&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPQRC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;29.88&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;29.88&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPQRC&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4045133369-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;5_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+     &quot;send_date&quot;: &quot;2025-10-02T15:42:36.269949784&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_6},&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;421.94&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;421.94&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;user_id&quot;: 8568508,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;421.94&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;421.94&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8568508,&#xd;
+            &quot;ref_key1&quot;: &quot;CPPOC&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4098108363-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;6_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+       &quot;send_date&quot;: &quot;2025-10-02T17:27:42.783098614&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_7},&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;provider&quot;: 797215856,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;46.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;46.90&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;user_id&quot;: 162901,&#xd;
+            &quot;ref_key1&quot;: &quot;SUS&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CSSD&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;46.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;46.90&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 162901,&#xd;
+            &quot;ref_key1&quot;: &quot;CSSD&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4131921771-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;7_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+      &quot;send_date&quot;: &quot;2025-10-02T17:26:51.836428823&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_8},&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;provider&quot;: 797215856,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;24.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;24.90&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;user_id&quot;: 41713,&#xd;
+            &quot;ref_key1&quot;: &quot;SUS&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CSSD&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;24.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;24.90&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 41713,&#xd;
+            &quot;ref_key1&quot;: &quot;CSSD&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4133761038-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;8_performanceBr-s4-${__UUID()}&quot;&#xd;
+    }&#xd;
+    ]&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="false">
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="script"></stringProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+    &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
+    &quot;elementsCount&quot;: 8,&#xd;
+    &quot;elements&quot;: [&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+                &quot;fisc_year&quot;: 2025,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+                &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;expiration_date&quot;: null,&#xd;
+                &quot;group_type&quot;: null,&#xd;
+                &quot;group_value&quot;: null,&#xd;
+                &quot;provider&quot;: null,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: null,&#xd;
+                        &quot;charge_type&quot;: null,&#xd;
+                        &quot;combo&quot;: null,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;tax_code&quot;: null,&#xd;
+                        &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;division&quot;: null,&#xd;
+                        &quot;user_id&quot;: 8573078,&#xd;
+                        &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 8573078,&#xd;
+                        &quot;ref_key1&quot;: &quot;CPPOC&quot;,&#xd;
+                        &quot;ref_key2&quot;: null,&#xd;
+                        &quot;ref_key3&quot;: null,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;shipping_info&quot;: null,&#xd;
+                &quot;data_id&quot;: &quot;4081985251-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;1_performanceBr-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+                &quot;sap_id&quot;: 99706141,&#xd;
+                &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+                &quot;fisc_year&quot;: 2025,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+                &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;expiration_date&quot;: null,&#xd;
+                &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+                &quot;group_value&quot;: &quot;3305109&quot;,&#xd;
+                &quot;provider&quot;: null,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: null,&#xd;
+                        &quot;charge_type&quot;: null,&#xd;
+                        &quot;combo&quot;: null,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;tax_code&quot;: null,&#xd;
+                        &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;division&quot;: null,&#xd;
+                        &quot;user_id&quot;: 183352672,&#xd;
+                        &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 183352672,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFWA&quot;,&#xd;
+                        &quot;ref_key2&quot;: null,&#xd;
+                        &quot;ref_key3&quot;: null,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;shipping_info&quot;: null,&#xd;
+                &quot;data_id&quot;: &quot;4005550410-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;2_performanceBr-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+   {&#xd;
+       &quot;send_date&quot;: &quot;2025-10-02T15:42:32.298141533&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+        &quot;sap_id&quot;: 99706151,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;3502754&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.08&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.08&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;user_id&quot;: 169678372,&#xd;
+            &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.08&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.08&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 169678372,&#xd;
+            &quot;ref_key1&quot;: &quot;CFWA&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4005711320-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;3_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+     &quot;send_date&quot;: &quot;2025-10-02T15:42:27.295286925&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SHI&quot;,&#xd;
+        &quot;sap_id&quot;: 99706161,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;5300108&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.99&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;SHI&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;15.01&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;15.01&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;BFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;15.01&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;15.01&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;BFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_PRO&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.99&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;TAXES&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;ISS_H&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;0.18&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;MELI&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ISS_H&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;0.020&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;TAXES1&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;ISS_S&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;0.18&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;MELI&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ISS_S&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;0.020&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4026427979-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;4_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+{&#xd;
+    &quot;send_date&quot;: &quot;2025-10-02T15:42:37.314184021&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: 99706171,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;60.32&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;60.32&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPMTP&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;20.44&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;20.44&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPMTP&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPQRP&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;10.00&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;10.00&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPQRP&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPQRC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;29.88&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;29.88&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPQRC&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4045133369-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;5_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+     &quot;send_date&quot;: &quot;2025-10-02T15:42:36.269949784&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: 99706191,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;421.94&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;421.94&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;user_id&quot;: 8568508,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;421.94&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;421.94&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8568508,&#xd;
+            &quot;ref_key1&quot;: &quot;CPPOC&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4098108363-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;6_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+       &quot;send_date&quot;: &quot;2025-10-02T17:27:42.783098614&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
+        &quot;sap_id&quot;: 99706201,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;provider&quot;: 797215856,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;46.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;46.90&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;user_id&quot;: 162901,&#xd;
+            &quot;ref_key1&quot;: &quot;SUS&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CSSD&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;46.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;46.90&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 162901,&#xd;
+            &quot;ref_key1&quot;: &quot;CSSD&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4131921771-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;7_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+      &quot;send_date&quot;: &quot;2025-10-02T17:26:51.836428823&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
+        &quot;sap_id&quot;: 99706211,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;provider&quot;: 797215856,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;24.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;24.90&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;user_id&quot;: 41713,&#xd;
+            &quot;ref_key1&quot;: &quot;SUS&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CSSD&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;24.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;24.90&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 41713,&#xd;
+            &quot;ref_key1&quot;: &quot;CSSD&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4133761038-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;8_performanceBr-s4-${__UUID()}&quot;&#xd;
+    }&#xd;
+    ]&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor">
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="script"></stringProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="false">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def atom = props.getObject(&apos;sap_id_atomic&apos;) as java.util.concurrent.atomic.AtomicLong
+if (atom == null) {
+synchronized (props) {
+atom = props.getObject(&apos;sap_id_atomic&apos;) as java.util.concurrent.atomic.AtomicLong
+if (atom == null) {
+long start = (props.get(&apos;sap_id_start&apos;) ?: vars.get(&apos;sap_id_start&apos;) ?: &apos;9999&apos;) as long
+atom = new java.util.concurrent.atomic.AtomicLong(start)
+props.putObject(&apos;sap_id_atomic&apos;, atom)
+}
+}
+}
+
+// Reserve a block of 8 IDs: [first, first+7]
+long first = atom.getAndAdd(block)
+for (int i = 0; i &lt; block; i++) {
+vars.put(&apos;sap_id_&apos; + (i + 1), String.valueOf(first + i))
+}
+vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional for logs
+
+</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler">
+            <boolProp name="displayJMeterProperties">false</boolProp>
+            <boolProp name="displayJMeterVariables">true</boolProp>
+            <boolProp name="displaySystemProperties">false</boolProp>
+          </DebugSampler>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Single /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+  &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
+  &quot;elementsCount&quot;: 2,&#xd;
+  &quot;elements&quot;: [&#xd;
+    {&#xd;
+      &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;expiration_date&quot;: null,&#xd;
+        &quot;group_type&quot;: null,&#xd;
+        &quot;group_value&quot;: null,&#xd;
+        &quot;provider&quot;: null,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;bu&quot;: null,&#xd;
+            &quot;charge_type&quot;: null,&#xd;
+            &quot;combo&quot;: null,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+            &quot;tax_code&quot;: null,&#xd;
+            &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+            &quot;division&quot;: null,&#xd;
+            &quot;user_id&quot;: 8573078,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4081985251&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8573078,&#xd;
+            &quot;ref_key1&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;ref_key2&quot;: null,&#xd;
+            &quot;ref_key3&quot;: null,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;shipping_info&quot;: null,&#xd;
+        &quot;data_id&quot;: &quot;4081985251-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;invoice-s4-f1e7676adb2e6a5a328d12d96c1ae4b31ba17c54&quot;&#xd;
+    },&#xd;
+    {&#xd;
+      &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+        &quot;sap_id&quot;: 99706141,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;expiration_date&quot;: null,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;3305109&quot;,&#xd;
+        &quot;provider&quot;: null,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;bu&quot;: null,&#xd;
+            &quot;charge_type&quot;: null,&#xd;
+            &quot;combo&quot;: null,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+            &quot;tax_code&quot;: null,&#xd;
+            &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+            &quot;division&quot;: null,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4005550410&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;ref_key2&quot;: null,&#xd;
+            &quot;ref_key3&quot;: null,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;shipping_info&quot;: null,&#xd;
+        &quot;data_id&quot;: &quot;4005550410-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;performanceBr-s4-${__UUID()}&quot;&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+  &quot;batchId&quot;: &quot;2499698435&quot;,&#xd;
+  &quot;elementsCount&quot;: 2,&#xd;
+  &quot;elements&quot;: [&#xd;
+    {&#xd;
+      &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: 99706181,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;expiration_date&quot;: null,&#xd;
+        &quot;group_type&quot;: null,&#xd;
+        &quot;group_value&quot;: null,&#xd;
+        &quot;provider&quot;: null,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;bu&quot;: null,&#xd;
+            &quot;charge_type&quot;: null,&#xd;
+            &quot;combo&quot;: null,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+            &quot;tax_code&quot;: null,&#xd;
+            &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+            &quot;division&quot;: null,&#xd;
+            &quot;user_id&quot;: 8573078,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4081985251&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8573078,&#xd;
+            &quot;ref_key1&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;ref_key2&quot;: null,&#xd;
+            &quot;ref_key3&quot;: null,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;shipping_info&quot;: null,&#xd;
+        &quot;data_id&quot;: &quot;4081985251-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;invoice-s4-f1e7676adb2e6a5a328d12d96c1ae4b31ba17c54&quot;&#xd;
+    },&#xd;
+    {&#xd;
+      &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+        &quot;sap_id&quot;: 99706141,&#xd;
+        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;expiration_date&quot;: null,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;3305109&quot;,&#xd;
+        &quot;provider&quot;: null,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;bu&quot;: null,&#xd;
+            &quot;charge_type&quot;: null,&#xd;
+            &quot;combo&quot;: null,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+            &quot;tax_code&quot;: null,&#xd;
+            &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+            &quot;division&quot;: null,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4005550410&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;ref_key2&quot;: null,&#xd;
+            &quot;ref_key3&quot;: null,&#xd;
+            &quot;bill_origin&quot;: null,&#xd;
+            &quot;point_name&quot;: null,&#xd;
+            &quot;point_city&quot;: null,&#xd;
+            &quot;point_stdc1&quot;: null&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;shipping_info&quot;: null,&#xd;
+        &quot;data_id&quot;: &quot;4005550410-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;invoice-s4-acba906720899c9d5c440e982e548ada01a33df2&quot;&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="3 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="4 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="5 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="6 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="8 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="7 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="8 /http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;${__UUID()}&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:${sap_id},&quot;date_created&quot;:&quot;${date_created}&quot;,&quot;doc_date&quot;:&quot;${doc_date}&quot;,&quot;account_date&quot;:&quot;${doc_date}&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;performanceBr-s4-${__UUID()}&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/http/invoice_fbi_S4" enabled="false">
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;batch_id&quot;:&quot;154740269656&quot;,&quot;elements_count&quot;:1,&quot;elements&quot;:[{&quot;send_date&quot;:&quot;2025-02-25T09:14:14.037253412&quot;,&quot;document&quot;:{&quot;obj_sys&quot;:&quot;ZSITE&quot;,&quot;site_id&quot;:&quot;MLA&quot;,&quot;bill_society&quot;:&quot;DFX&quot;,&quot;sap_id&quot;:94220,&quot;date_created&quot;:&quot;2025-02-25T00:00:00&quot;,&quot;doc_date&quot;:&quot;2025-03-08T00:00:00&quot;,&quot;account_date&quot;:&quot;2025-03-08T00:00:00&quot;,&quot;fisc_year&quot;:2025,&quot;label&quot;:&quot;&quot;,&quot;head_text&quot;:&quot;Conciliacion 2025-03-08&quot;,&quot;currency&quot;:&quot;ARS&quot;,&quot;doc_type&quot;:&quot;FC&quot;,&quot;store_id&quot;:&quot;0057&quot;,&quot;cancellation&quot;:&quot;&quot;,&quot;line_item&quot;:[{&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;21545.85&quot;,&quot;amount_base&quot;:&quot;21545.85&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;DFX&quot;,&quot;ref_key2&quot;:&quot;3491166202&quot;,&quot;ref_key3&quot;:&quot;FC&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;CFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;H&quot;,&quot;amount_doc&quot;:&quot;32312.86&quot;,&quot;amount_base&quot;:&quot;32312.86&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;CFX&quot;},{&quot;bu&quot;:&quot;CORE&quot;,&quot;charge_type&quot;:&quot;BFX&quot;,&quot;combo&quot;:&quot;GENERIC&quot;,&quot;acc_key&quot;:&quot;S&quot;,&quot;amount_doc&quot;:&quot;10767.01&quot;,&quot;amount_base&quot;:&quot;10767.01&quot;,&quot;tax_code&quot;:&quot;D1&quot;,&quot;assignment&quot;:&quot;3491166202&quot;,&quot;division&quot;:&quot;ML&quot;,&quot;user_id&quot;:2289099784,&quot;ref_key1&quot;:&quot;BFX&quot;}],&quot;data_id&quot;:&quot;3491166202-0&quot;},&quot;source&quot;:&quot;Provifaz IT SAP S4&quot;,&quot;message_id_external&quot;:&quot;invoice-s4-4bf6f8bd63285ccce3731958161af64e785d17a4&quot;}]}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Authorization" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+                </elementProp>
+              </collectionProp>
+              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
