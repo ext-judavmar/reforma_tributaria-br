@@ -56,7 +56,7 @@
           </elementProp>
           <elementProp name="initialSapId" elementType="Argument">
             <stringProp name="Argument.name">initialSapId</stringProp>
-            <stringProp name="Argument.value">${__P(initialSapId,99894970)}</stringProp>
+            <stringProp name="Argument.value">${__P(initialSapId,99894986)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -2004,7 +2004,7 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller"/>
         <hashTree>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler">
             <stringProp name="cacheKey">true</stringProp>
@@ -2012,20 +2012,6 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
             <stringProp name="parameters"></stringProp>
             <stringProp name="script">// Initialization script to set the global counter
 def initialSapId = ${initialSapId}L // Use &apos;L&apos; to denote a Long
-
-// Set the GLOBAL property using props.put()
-props.put(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;, initialSapId.toString())
-
-log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;))</stringProp>
-            <stringProp name="scriptLanguage">groovy</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">// Initialization script to set the global counter
-def initialSapId = 99894950L // Use &apos;L&apos; to denote a Long
 
 // Set the GLOBAL property using props.put()
 props.put(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;, initialSapId.toString())
@@ -2619,14 +2605,6 @@ log.info(&quot;Starting ID for this request: &quot; + currentSapId)</stringProp>
               </collectionProp>
               <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
             </HeaderManager>
-            <hashTree/>
-            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="false">
-              <stringProp name="cacheKey">true</stringProp>
-              <stringProp name="filename"></stringProp>
-              <stringProp name="parameters"></stringProp>
-              <stringProp name="script"></stringProp>
-              <stringProp name="scriptLanguage">groovy</stringProp>
-            </JSR223PostProcessor>
             <hashTree/>
           </hashTree>
           <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
