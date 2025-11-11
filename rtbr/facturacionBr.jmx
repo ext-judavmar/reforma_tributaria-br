@@ -5,6 +5,8 @@
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
@@ -1953,7 +1955,7 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
             <hashTree/>
           </hashTree>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1996,17 +1998,16 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
         <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
         <stringProp name="ThreadGroup.duration">${testTime}</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">3</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller"/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -2021,60 +2022,20 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Transaction Controller">
-          <boolProp name="TransactionController.includeTimers">false</boolProp>
-        </TransactionController>
-        <hashTree>
-          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">// 1. Get the current global counter value using the exact name from your setup.
-// We use props.get() for the GLOBAL counter and convert it to a Long.
-def currentSapId = props.get(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;).toLong()
-
-// 2. Define the number of IDs to generate.
-def batchSize = 8
-
-// 3. Loop 8 times to calculate and assign the sequential IDs to JMeter variables.
-for (int i = 0; i &lt; batchSize; i++) {
-    // Calculate the sequential ID for this element
-    def sapId = currentSapId + i
-    
-    // Create the variable name (e.g., sap_id_1, sap_id_2)
-    def varName = &quot;sap_id_&quot; + (i + 1)
-    
-    // CRITICAL: Store the ID into a local JMeter variable (vars)
-    // The variables sap_id_1 through sap_id_8 are now available for the HTTP Request AND the Debug Sampler.
-    vars.put(varName, sapId.toString())
-}
-
-// 4. Calculate the *NEXT* starting ID (last ID + 1)
-def nextSapId = currentSapId + batchSize
-
-// 5. Update the GLOBAL property for the next thread/iteration.
-// This is how the test maintains continuity across requests/threads.
-props.put(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;, nextSapId.toString())
-
-// Optional: Log the start ID for verification
-log.info(&quot;Starting ID for this request: &quot; + currentSapId)</stringProp>
-            <stringProp name="scriptLanguage">groovy</stringProp>
-          </JSR223PreProcessor>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_8">
-            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
-            <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
-            <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_8">
+          <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+          <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
     &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
     &quot;elementsCount&quot;: 8,&#xd;
     &quot;elements&quot;: [&#xd;
@@ -2585,36 +2546,65 @@ log.info(&quot;Starting ID for this request: &quot; + currentSapId)</stringProp>
     }&#xd;
     ]&#xd;
 }</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="Content-Type" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">application/json</stringProp>
-                </elementProp>
-                <elementProp name="Authorization" elementType="Header">
-                  <stringProp name="Header.name">Authorization</stringProp>
-                  <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
-                </elementProp>
-              </collectionProp>
-              <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
-          <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
-            <boolProp name="displayJMeterProperties">false</boolProp>
-            <boolProp name="displayJMeterVariables">true</boolProp>
-            <boolProp name="displaySystemProperties">false</boolProp>
-          </DebugSampler>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Content-Type" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+              </elementProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// 1. Get the current global counter value using the exact name from your setup.
+// We use props.get() for the GLOBAL counter and convert it to a Long.
+def currentSapId = props.get(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;).toLong()
+
+// 2. Define the number of IDs to generate.
+def batchSize = 8
+
+// 3. Loop 8 times to calculate and assign the sequential IDs to JMeter variables.
+for (int i = 0; i &lt; batchSize; i++) {
+    // Calculate the sequential ID for this element
+    def sapId = currentSapId + i
+    
+    // Create the variable name (e.g., sap_id_1, sap_id_2)
+    def varName = &quot;sap_id_&quot; + (i + 1)
+    
+    // CRITICAL: Store the ID into a local JMeter variable (vars)
+    // The variables sap_id_1 through sap_id_8 are now available for the HTTP Request AND the Debug Sampler.
+    vars.put(varName, sapId.toString())
+}
+
+// 4. Calculate the *NEXT* starting ID (last ID + 1)
+def nextSapId = currentSapId + batchSize
+
+// 5. Update the GLOBAL property for the next thread/iteration.
+// This is how the test maintains continuity across requests/threads.
+props.put(&apos;GLOBAL_SAP_SAP_ID_COUNTER&apos;, nextSapId.toString())
+
+// Optional: Log the start ID for verification
+log.info(&quot;Starting ID for this request: &quot; + currentSapId)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -2651,8 +2641,14 @@ log.info(&quot;Starting ID for this request: &quot; + currentSapId)</stringProp>
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
-      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener">
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
         <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
           <collectionProp name="Arguments.arguments">
             <elementProp name="influxdbMetricsSender" elementType="Argument">
