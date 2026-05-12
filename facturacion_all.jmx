@@ -1,0 +1,1489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Facturacion All - BR+MX+AR">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="timestamp" elementType="Argument">
+            <stringProp name="Argument.name">timestamp</stringProp>
+            <stringProp name="Argument.value">${__time()}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="UUID" elementType="Argument">
+            <stringProp name="Argument.name">UUID</stringProp>
+            <stringProp name="Argument.value">${__UUID()}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="date_created" elementType="Argument">
+            <stringProp name="Argument.name">date_created</stringProp>
+            <stringProp name="Argument.value">${__P(date_created,2026-05-12T00:00:00)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="doc_date" elementType="Argument">
+            <stringProp name="Argument.name">doc_date</stringProp>
+            <stringProp name="Argument.value">${__P(doc_date,2026-05-12T00:00:00)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="account_date" elementType="Argument">
+            <stringProp name="Argument.name">account_date</stringProp>
+            <stringProp name="Argument.value">${__P(account_date,2026-05-12T00:00:00)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="virtualUsers" elementType="Argument">
+            <stringProp name="Argument.name">virtualUsers</stringProp>
+            <stringProp name="Argument.value">${__P(virtualUsers,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="rampUp" elementType="Argument">
+            <stringProp name="Argument.name">rampUp</stringProp>
+            <stringProp name="Argument.value">${__P(rampUp,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="testTime" elementType="Argument">
+            <stringProp name="Argument.name">testTime</stringProp>
+            <stringProp name="Argument.value">${__P(testTime,3600)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="initialSapId" elementType="Argument">
+            <stringProp name="Argument.name">initialSapId</stringProp>
+            <stringProp name="Argument.value">${__P(initialSapId,1610295048)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="loopCount_br" elementType="Argument">
+            <stringProp name="Argument.name">loopCount_br</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount_br,100000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="loopCount_mx" elementType="Argument">
+            <stringProp name="Argument.name">loopCount_mx</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount_mx,200000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="loopCount_ar" elementType="Argument">
+            <stringProp name="Argument.name">loopCount_ar</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount_ar,100000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="UAT RTBr - Thread Group">
+        <stringProp name="ThreadGroup.num_threads">${virtualUsers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
+        <stringProp name="ThreadGroup.duration">${testTime}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${loopCount_br}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// Initialize an AtomicLong-backed counter so sap_id reservation is atomic across VUs.
+// OnceOnlyController runs once PER THREAD, so multiple threads enter this block.
+// The synchronized check-and-put guarantees that exactly one AtomicLong is created
+// and shared across all threads, so the counter is never reset mid-test and ids never repeat.
+import java.util.concurrent.atomic.AtomicLong
+
+def initialSapId = ${initialSapId}L
+synchronized (props) {
+    if (props.get(&apos;sap_id_atomic&apos;) == null) {
+        props.put(&apos;sap_id_atomic&apos;, new AtomicLong(initialSapId))
+        log.info(&quot;Initialized sap_id_atomic to: &quot; + initialSapId)
+    } else {
+        log.info(&quot;sap_id_atomic already initialized, current=&quot; + ((AtomicLong) props.get(&apos;sap_id_atomic&apos;)).get())
+    }
+}</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Sampler>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_8" enabled="true">
+          <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+          <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
+    &quot;elementsCount&quot;: 8,&#xd;
+    &quot;elements&quot;: [&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_1},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2025,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+                &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;expiration_date&quot;: null,&#xd;
+                &quot;group_type&quot;: null,&#xd;
+                &quot;group_value&quot;: null,&#xd;
+                &quot;provider&quot;: null,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: null,&#xd;
+                        &quot;charge_type&quot;: null,&#xd;
+                        &quot;combo&quot;: null,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;tax_code&quot;: null,&#xd;
+                        &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;division&quot;: null,&#xd;
+                        &quot;user_id&quot;: 8573078,&#xd;
+                        &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;9.42&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4081985251&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 8573078,&#xd;
+                        &quot;ref_key1&quot;: &quot;CPPOC&quot;,&#xd;
+                        &quot;ref_key2&quot;: null,&#xd;
+                        &quot;ref_key3&quot;: null,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;shipping_info&quot;: null,&#xd;
+                &quot;data_id&quot;: &quot;4081985251-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;1_performanceBr-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_2},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2025,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+                &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;expiration_date&quot;: null,&#xd;
+                &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+                &quot;group_value&quot;: &quot;3305109&quot;,&#xd;
+                &quot;provider&quot;: null,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: null,&#xd;
+                        &quot;charge_type&quot;: null,&#xd;
+                        &quot;combo&quot;: null,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;tax_code&quot;: null,&#xd;
+                        &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;division&quot;: null,&#xd;
+                        &quot;user_id&quot;: 183352672,&#xd;
+                        &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;7.15&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4005550410&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 183352672,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFWA&quot;,&#xd;
+                        &quot;ref_key2&quot;: null,&#xd;
+                        &quot;ref_key3&quot;: null,&#xd;
+                        &quot;bill_origin&quot;: null,&#xd;
+                        &quot;point_name&quot;: null,&#xd;
+                        &quot;point_city&quot;: null,&#xd;
+                        &quot;point_stdc1&quot;: null&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;shipping_info&quot;: null,&#xd;
+                &quot;data_id&quot;: &quot;4005550410-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;2_performanceBr-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+   {&#xd;
+       &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_3},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;3502754&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.08&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.08&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;user_id&quot;: 169678372,&#xd;
+            &quot;ref_key1&quot;: &quot;ALM&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFWA&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.08&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.08&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4005711320&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 169678372,&#xd;
+            &quot;ref_key1&quot;: &quot;CFWA&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4005711320-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;3_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+     &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SHI&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_4},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;group_type&quot;: &quot;IBGE&quot;,&#xd;
+        &quot;group_value&quot;: &quot;5300108&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.99&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;SHI&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;15.01&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;15.01&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;BFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;15.01&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;15.01&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;BFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CFFI&quot;,&#xd;
+            &quot;combo&quot;: &quot;GOLD_PRO&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;6.99&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4026427979&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;CFFI&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;TAXES&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;ISS_H&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;0.18&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;MELI&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ISS_H&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;0.020&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;TAXES1&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;ISS_S&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;0.18&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;6.99&quot;,&#xd;
+            &quot;assignment&quot;: &quot;MELI&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 183352672,&#xd;
+            &quot;ref_key1&quot;: &quot;ISS_S&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;0.020&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4026427979-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;4_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+{&#xd;
+    &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_5},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;60.32&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;60.32&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPMTP&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;20.44&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;20.44&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPMTP&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPQRP&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;10.00&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;10.00&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPQRP&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPQRC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;29.88&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;29.88&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4045133369&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8578978,&#xd;
+            &quot;ref_key1&quot;: &quot;CPQRC&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4045133369-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;5_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+     &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_6},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;421.94&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;421.94&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;user_id&quot;: 8568508,&#xd;
+            &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;MP&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CPPOC&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;421.94&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;421.94&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4098108363&quot;,&#xd;
+            &quot;division&quot;: &quot;MP&quot;,&#xd;
+            &quot;user_id&quot;: 8568508,&#xd;
+            &quot;ref_key1&quot;: &quot;CPPOC&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4098108363-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;6_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+       &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_7},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;provider&quot;: 797215856,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;46.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;46.90&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;user_id&quot;: 162901,&#xd;
+            &quot;ref_key1&quot;: &quot;SUS&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CSSD&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;46.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;46.90&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4131921771&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 162901,&#xd;
+            &quot;ref_key1&quot;: &quot;CSSD&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4131921771-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;7_performanceBr-s4-${__UUID()}&quot;&#xd;
+    },&#xd;
+   {&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+      &quot;document&quot;: {&#xd;
+        &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+        &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
+        &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
+        &quot;sap_id&quot;: ${sap_id_8},&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+        &quot;fisc_year&quot;: 2025,&#xd;
+        &quot;label&quot;: &quot;&quot;,&#xd;
+        &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
+        &quot;currency&quot;: &quot;BRL&quot;,&#xd;
+        &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+        &quot;store_id&quot;: &quot;&quot;,&#xd;
+        &quot;cancellation&quot;: &quot;&quot;,&#xd;
+        &quot;provider&quot;: 797215856,&#xd;
+        &quot;line_item&quot;: [&#xd;
+          {&#xd;
+            &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;24.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;24.90&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;user_id&quot;: 41713,&#xd;
+            &quot;ref_key1&quot;: &quot;SUS&quot;,&#xd;
+            &quot;ref_key2&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+          },&#xd;
+          {&#xd;
+            &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+            &quot;charge_type&quot;: &quot;CSSD&quot;,&#xd;
+            &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+            &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+            &quot;amount_doc&quot;: &quot;24.90&quot;,&#xd;
+            &quot;amount_base&quot;: &quot;24.90&quot;,&#xd;
+            &quot;tax_code&quot;: &quot;E0&quot;,&#xd;
+            &quot;assignment&quot;: &quot;4133761038&quot;,&#xd;
+            &quot;division&quot;: &quot;ML&quot;,&#xd;
+            &quot;user_id&quot;: 41713,&#xd;
+            &quot;ref_key1&quot;: &quot;CSSD&quot;&#xd;
+          }&#xd;
+        ],&#xd;
+        &quot;data_id&quot;: &quot;4133761038-1&quot;,&#xd;
+        &quot;bill_b&quot;: 0&#xd;
+      },&#xd;
+      &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+      &quot;message_id_external&quot;: &quot;8_performanceBr-s4-${__UUID()}&quot;&#xd;
+    }&#xd;
+    ]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Content-Type" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+              </elementProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// Atomic block reservation: getAndAdd is one indivisible op, so no two
+// threads can ever reserve overlapping sap_id ranges.
+def atom = props.get(&apos;sap_id_atomic&apos;) as java.util.concurrent.atomic.AtomicLong
+def batchSize = 8
+
+long first = atom.getAndAdd(batchSize)
+
+for (int i = 0; i &lt; batchSize; i++) {
+    vars.put(&apos;sap_id_&apos; + (i + 1), String.valueOf(first + i))
+}
+
+log.info(&quot;Thread &quot; + ctx.getThreadNum() + &quot; reserved sap_id block: &quot; + first + &quot;..&quot; + (first + batchSize - 1))
+
+// Set send_date to current ISO timestamp (one value per request)
+vars.put(&apos;send_date&apos;, java.time.LocalDateTime.now().toString())</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="UAT RTMx - Thread Group">
+        <stringProp name="ThreadGroup.num_threads">${virtualUsers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
+        <stringProp name="ThreadGroup.duration">${testTime}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${loopCount_mx}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// [SAP_ID v2] Thread-safe global counter for sap_id.
+// OnceOnlyController runs once PER THREAD, so multiple threads enter this
+// block. The synchronized check-and-put guarantees that exactly one
+// AtomicLong is created and shared across all threads, so the counter
+// is never reset mid-test and ids never repeat.
+import java.util.concurrent.atomic.AtomicLong
+
+def initialSapId = ${initialSapId}L
+synchronized (props) {
+    if (props.get(&apos;sap_id_atomic&apos;) == null) {
+        props.put(&apos;sap_id_atomic&apos;, new AtomicLong(initialSapId))
+        log.info(&quot;[SAP_ID v2] Created sap_id_atomic starting at &quot; + initialSapId)
+    } else {
+        def existing = ((AtomicLong) props.get(&apos;sap_id_atomic&apos;)).get()
+        log.info(&quot;[SAP_ID v2] Counter already initialized, current=&quot; + existing)
+    }
+}
+log.info(&quot;Initialized sap_id_atomic to: &quot; + initialSapId)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Sampler>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_4">
+          <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+          <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
+    &quot;elementsCount&quot;: 4,&#xd;
+    &quot;elements&quot;: [&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;POS&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_1},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;USD&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FI&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487608&quot;,&#xd;
+                        &quot;user_id&quot;: 91000000313,&#xd;
+                        &quot;ref_key1&quot;: &quot;POS&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809487608&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FI&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CV&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487608&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 91000000313,&#xd;
+                        &quot;ref_key1&quot;: &quot;CV&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809487608-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;1_performanceMx-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;PRE&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_2},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;MXN&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;178.70&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;178.70&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487674&quot;,&#xd;
+                        &quot;user_id&quot;: 366313160,&#xd;
+                        &quot;ref_key1&quot;: &quot;PRE&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809487674&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CV&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;26.70&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;26.70&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487674&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 366313160,&#xd;
+                        &quot;ref_key1&quot;: &quot;CV&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CXD&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;152.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;152.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487674&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 366313160,&#xd;
+                        &quot;ref_key1&quot;: &quot;CXD&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809487674-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;2_performanceMx-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;PRE&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_3},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;USD&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;CI&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;0.68&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;0.68&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487913&quot;,&#xd;
+                        &quot;user_id&quot;: 91000000313,&#xd;
+                        &quot;ref_key1&quot;: &quot;PRE&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809487913&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;CI&quot;,&#xd;
+                        &quot;bill_origin&quot;: 24434565302026&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;BV&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;0.68&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;0.68&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809487913&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 91000000313,&#xd;
+                        &quot;ref_key1&quot;: &quot;BV&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809487913-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;3_performanceMx-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;ADS&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_4},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;MXN&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4194730322&quot;,&#xd;
+                        &quot;user_id&quot;: 3134271420,&#xd;
+                        &quot;ref_key1&quot;: &quot;ADS&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4194730322&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CSPADS&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4194730322&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 3134271420,&#xd;
+                        &quot;ref_key1&quot;: &quot;CSPADS&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4194730322-10&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;4_performanceMx-s4-${__UUID()}&quot;&#xd;
+        }&#xd;
+    ]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Content-Type" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+              </elementProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// [SAP_ID v2] Atomically reserve a unique block of sap_ids for this iteration.
+// AtomicLong.getAndAdd is thread-safe: every concurrent thread receives a
+// disjoint range, so sap_id values never repeat across users or
+// iterations and the counter advances strictly monotonically.
+import java.util.concurrent.atomic.AtomicLong
+
+def counter = (AtomicLong) props.get(&apos;sap_id_atomic&apos;)
+if (counter == null) {
+    throw new IllegalStateException(&quot;[SAP_ID v2] sap_id_atomic not initialized â€” init sampler did not run.&quot;)
+}
+def batchSize = 4
+def startSapId = counter.getAndAdd(batchSize)
+
+for (int i = 0; i &lt; batchSize; i++) {
+    vars.put(&quot;sap_id_&quot; + (i + 1), (startSapId + i).toString())
+}
+
+log.info(&quot;Reserved sap_id block: &quot; + startSapId + &quot;..&quot; + (startSapId + batchSize - 1))
+
+// Set send_date to current ISO timestamp (one value per request)
+vars.put(&apos;send_date&apos;, java.time.LocalDateTime.now().toString())</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="UAT RTArg - Thread Group">
+        <stringProp name="ThreadGroup.num_threads">${virtualUsers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
+        <stringProp name="ThreadGroup.duration">${testTime}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${loopCount_ar}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller"/>
+        <hashTree>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// Initialize an AtomicLong-backed counter so sap_id reservation is atomic across VUs.
+// OnceOnlyController runs once PER THREAD, so multiple threads enter this block.
+// The synchronized check-and-put guarantees that exactly one AtomicLong is created
+// and shared across all threads, so the counter is never reset mid-test and ids never repeat.
+import java.util.concurrent.atomic.AtomicLong
+
+def initialSapId = ${initialSapId}L
+synchronized (props) {
+    if (props.get(&apos;sap_id_atomic&apos;) == null) {
+        props.put(&apos;sap_id_atomic&apos;, new AtomicLong(initialSapId))
+        log.info(&quot;Initialized sap_id_atomic to: &quot; + initialSapId)
+    } else {
+        log.info(&quot;sap_id_atomic already initialized, current=&quot; + ((AtomicLong) props.get(&apos;sap_id_atomic&apos;)).get())
+    }
+}</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Sampler>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_8" enabled="true">
+          <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
+          <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/http/invoice_fbi_S4</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
+    &quot;elementsCount&quot;: 8,&#xd;
+    &quot;elements&quot;: [&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;PRF&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_1},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0057&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809428503&quot;,&#xd;
+                        &quot;user_id&quot;: 17530689,&#xd;
+                        &quot;ref_key1&quot;: &quot;PRF&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809428503&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CSERRE&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809428503&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 17530689,&#xd;
+                        &quot;ref_key1&quot;: &quot;CSERRE&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809428503-1&quot;,&#xd;
+                &quot;bill_b&quot;: 1&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;1_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_2},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0070&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809434359&quot;,&#xd;
+                        &quot;user_id&quot;: 233411015,&#xd;
+                        &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809434359&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CPMTP&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809434359&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 233411015,&#xd;
+                        &quot;ref_key1&quot;: &quot;CPMTP&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809434359-1&quot;,&#xd;
+                &quot;bill_b&quot;: 1&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;2_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;CFP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_3},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0080&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809490619&quot;,&#xd;
+                        &quot;user_id&quot;: 147688640,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809490619&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CFPOFF&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809490619&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 147688640,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFPOFF&quot;,&#xd;
+                        &quot;point_name&quot;: &quot;PROPATO DE CASTELLI M     &quot;,&#xd;
+                        &quot;point_city&quot;: &quot;San isidro de lules&quot;,&#xd;
+                        &quot;point_stdc1&quot;: &quot;23000000000&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809490619-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;3_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;PRF&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_4},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0057&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809428504&quot;,&#xd;
+                        &quot;user_id&quot;: 17530689,&#xd;
+                        &quot;ref_key1&quot;: &quot;PRF&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809428504&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CSERRE&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809428504&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 17530689,&#xd;
+                        &quot;ref_key1&quot;: &quot;CSERRE&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809428504-1&quot;,&#xd;
+                &quot;bill_b&quot;: 1&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;4_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_5},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0070&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809434360&quot;,&#xd;
+                        &quot;user_id&quot;: 233411015,&#xd;
+                        &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809434360&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CPMTP&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809434360&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 233411015,&#xd;
+                        &quot;ref_key1&quot;: &quot;CPMTP&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809434360-1&quot;,&#xd;
+                &quot;bill_b&quot;: 1&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;5_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;CFP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_6},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0080&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809490620&quot;,&#xd;
+                        &quot;user_id&quot;: 147688640,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809490620&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CFPOFF&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;5955.00&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809490620&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 147688640,&#xd;
+                        &quot;ref_key1&quot;: &quot;CFPOFF&quot;,&#xd;
+                        &quot;point_name&quot;: &quot;PROPATO DE CASTELLI M     &quot;,&#xd;
+                        &quot;point_city&quot;: &quot;San isidro de lules&quot;,&#xd;
+                        &quot;point_stdc1&quot;: &quot;23000000000&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809490620-1&quot;,&#xd;
+                &quot;bill_b&quot;: 0&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;6_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;PRF&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_7},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0057&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809428505&quot;,&#xd;
+                        &quot;user_id&quot;: 17530689,&#xd;
+                        &quot;ref_key1&quot;: &quot;PRF&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809428505&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CSERRE&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;208.00&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809428505&quot;,&#xd;
+                        &quot;division&quot;: &quot;ML&quot;,&#xd;
+                        &quot;user_id&quot;: 17530689,&#xd;
+                        &quot;ref_key1&quot;: &quot;CSERRE&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809428505-1&quot;,&#xd;
+                &quot;bill_b&quot;: 1&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;7_performanceArg-s4-${__UUID()}&quot;&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
+            &quot;document&quot;: {&#xd;
+                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
+                &quot;site_id&quot;: &quot;MLA&quot;,&#xd;
+                &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_8},&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
+                &quot;fisc_year&quot;: 2026,&#xd;
+                &quot;label&quot;: &quot;&quot;,&#xd;
+                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
+                &quot;currency&quot;: &quot;ARS&quot;,&#xd;
+                &quot;doc_type&quot;: &quot;FC&quot;,&#xd;
+                &quot;store_id&quot;: &quot;0070&quot;,&#xd;
+                &quot;cancellation&quot;: &quot;&quot;,&#xd;
+                &quot;line_item&quot;: [&#xd;
+                    {&#xd;
+                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809434361&quot;,&#xd;
+                        &quot;user_id&quot;: 233411015,&#xd;
+                        &quot;ref_key1&quot;: &quot;MP&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4809434361&quot;,&#xd;
+                        &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
+                    },&#xd;
+                    {&#xd;
+                        &quot;bu&quot;: &quot;MP&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CPMTP&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
+                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;2935.80&quot;,&#xd;
+                        &quot;tax_code&quot;: &quot;D1&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4809434361&quot;,&#xd;
+                        &quot;division&quot;: &quot;MP&quot;,&#xd;
+                        &quot;user_id&quot;: 233411015,&#xd;
+                        &quot;ref_key1&quot;: &quot;CPMTP&quot;&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;data_id&quot;: &quot;4809434361-1&quot;,&#xd;
+                &quot;bill_b&quot;: 1&#xd;
+            },&#xd;
+            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
+            &quot;message_id_external&quot;: &quot;8_performanceArg-s4-${__UUID()}&quot;&#xd;
+        }&#xd;
+    ]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP HeaderManager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Content-Type" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Basic c2ItNDJlMDE1NGUtYTJhYi00MTg5LWI0ZjctOTdhOTdmMTBjNGNhIWIyMTExMzl8aXQtcnQtaXMtdGVzdC1tZXJjYWRvbGlicmUhYjU2MTg2OjczNjA5Nzg4LWFkYjktNDhhMy1hZWFjLWVmZWQzM2EzZjY3MyR2ZmV5UndvRVpLMFF0X3o5cWxuZWVhbTY3djBOalNWSUpadFFTUnRmYXkwPQ==</stringProp>
+              </elementProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.602997</stringProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">// Atomic block reservation: getAndAdd is one indivisible op, so no two
+// threads can ever reserve overlapping sap_id ranges.
+def atom = props.get(&apos;sap_id_atomic&apos;) as java.util.concurrent.atomic.AtomicLong
+def batchSize = 8
+
+long first = atom.getAndAdd(batchSize)
+
+for (int i = 0; i &lt; batchSize; i++) {
+    vars.put(&apos;sap_id_&apos; + (i + 1), String.valueOf(first + i))
+}
+
+log.info(&quot;Thread &quot; + ctx.getThreadNum() + &quot; reserved sap_id block: &quot; + first + &quot;..&quot; + (first + batchSize - 1))
+
+// Set send_date to current ISO timestamp (one value per request)
+vars.put(&apos;send_date&apos;, java.time.LocalDateTime.now().toString())</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

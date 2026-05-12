@@ -23,27 +23,32 @@
           </elementProp>
           <elementProp name="date_created" elementType="Argument">
             <stringProp name="Argument.name">date_created</stringProp>
-            <stringProp name="Argument.value">${__P(date_created,2025-02-25T00:00:00)}</stringProp>
+            <stringProp name="Argument.value">${__P(date_created,2026-05-12T00:00:00)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="doc_date" elementType="Argument">
             <stringProp name="Argument.name">doc_date</stringProp>
-            <stringProp name="Argument.value">${__P(doc_date,2025-03-08T00:00:00)}</stringProp>
+            <stringProp name="Argument.value">${__P(doc_date,2026-05-12T00:00:00)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="account_date" elementType="Argument">
+            <stringProp name="Argument.name">account_date</stringProp>
+            <stringProp name="Argument.value">${__P(account_date,2026-05-12T00:00:00)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="virtualUsers" elementType="Argument">
             <stringProp name="Argument.name">virtualUsers</stringProp>
-            <stringProp name="Argument.value">${__P(virtualUsers,2)}</stringProp>
+            <stringProp name="Argument.value">${__P(virtualUsers,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="rampUp" elementType="Argument">
             <stringProp name="Argument.name">rampUp</stringProp>
-            <stringProp name="Argument.value">${__P(rampUp,20)}</stringProp>
+            <stringProp name="Argument.value">${__P(rampUp,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="testTime" elementType="Argument">
             <stringProp name="Argument.name">testTime</stringProp>
-            <stringProp name="Argument.value">${__P(testTime,9600)}</stringProp>
+            <stringProp name="Argument.value">${__P(testTime,300)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="loopCount" elementType="Argument">
@@ -53,7 +58,7 @@
           </elementProp>
           <elementProp name="initialSapId" elementType="Argument">
             <stringProp name="Argument.name">initialSapId</stringProp>
-            <stringProp name="Argument.value">${__P(initialSapId,1610066486)}</stringProp>
+            <stringProp name="Argument.value">${__P(initialSapId,1610295048)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -147,7 +152,7 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
     &quot;elementsCount&quot;: 8,&#xd;
     &quot;elements&quot;: [&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
@@ -155,7 +160,7 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
                 &quot;sap_id&quot;: ${sap_id_1},&#xd;
                 &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
                 &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2025,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -215,15 +220,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
             &quot;message_id_external&quot;: &quot;1_performanceBr-s4-${__UUID()}&quot;&#xd;
         },&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
                 &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
                 &quot;sap_id&quot;: ${sap_id_2},&#xd;
-                &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-                &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2025,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -283,15 +288,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
             &quot;message_id_external&quot;: &quot;2_performanceBr-s4-${__UUID()}&quot;&#xd;
         },&#xd;
    {&#xd;
-       &quot;send_date&quot;: &quot;2025-10-02T15:42:32.298141533&quot;,&#xd;
+       &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
         &quot;sap_id&quot;: ${sap_id_3},&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -333,15 +338,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;3_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-     &quot;send_date&quot;: &quot;2025-10-02T15:42:27.295286925&quot;,&#xd;
+     &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;SHI&quot;,&#xd;
         &quot;sap_id&quot;: ${sap_id_4},&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -432,15 +437,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;4_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
 {&#xd;
-    &quot;send_date&quot;: &quot;2025-10-02T15:42:37.314184021&quot;,&#xd;
+    &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
         &quot;sap_id&quot;: ${sap_id_5},&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -506,15 +511,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;5_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-     &quot;send_date&quot;: &quot;2025-10-02T15:42:36.269949784&quot;,&#xd;
+     &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
         &quot;sap_id&quot;: ${sap_id_6},&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -554,15 +559,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;6_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-       &quot;send_date&quot;: &quot;2025-10-02T17:27:42.783098614&quot;,&#xd;
+       &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
         &quot;sap_id&quot;: ${sap_id_7},&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
@@ -603,15 +608,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;7_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-      &quot;send_date&quot;: &quot;2025-10-02T17:26:51.836428823&quot;,&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
         &quot;sap_id&quot;: ${sap_id_8},&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
@@ -701,7 +706,7 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
     &quot;elementsCount&quot;: 8,&#xd;
     &quot;elements&quot;: [&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
@@ -709,7 +714,7 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
                 &quot;sap_id&quot;: ${sap_id},&#xd;
                 &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
                 &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2025,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -769,15 +774,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
             &quot;message_id_external&quot;: &quot;1_performanceBr-s4-${__UUID()}&quot;&#xd;
         },&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
                 &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
                 &quot;sap_id&quot;: 99706141,&#xd;
-                &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-                &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2025,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -837,15 +842,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
             &quot;message_id_external&quot;: &quot;2_performanceBr-s4-${__UUID()}&quot;&#xd;
         },&#xd;
    {&#xd;
-       &quot;send_date&quot;: &quot;2025-10-02T15:42:32.298141533&quot;,&#xd;
+       &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
         &quot;sap_id&quot;: 99706151,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -887,15 +892,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;3_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-     &quot;send_date&quot;: &quot;2025-10-02T15:42:27.295286925&quot;,&#xd;
+     &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;SHI&quot;,&#xd;
         &quot;sap_id&quot;: 99706161,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -986,15 +991,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;4_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
 {&#xd;
-    &quot;send_date&quot;: &quot;2025-10-02T15:42:37.314184021&quot;,&#xd;
+    &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
         &quot;sap_id&quot;: 99706171,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -1060,15 +1065,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;5_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-     &quot;send_date&quot;: &quot;2025-10-02T15:42:36.269949784&quot;,&#xd;
+     &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
         &quot;sap_id&quot;: 99706191,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -1108,15 +1113,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;6_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-       &quot;send_date&quot;: &quot;2025-10-02T17:27:42.783098614&quot;,&#xd;
+       &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
         &quot;sap_id&quot;: 99706201,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
@@ -1157,15 +1162,15 @@ log.info(&quot;Initialized GLOBAL_SAP_SAP_ID_COUNTER to: &quot; + props.get(&apo
       &quot;message_id_external&quot;: &quot;7_performanceBr-s4-${__UUID()}&quot;&#xd;
     },&#xd;
    {&#xd;
-      &quot;send_date&quot;: &quot;2025-10-02T17:26:51.836428823&quot;,&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;SUS&quot;,&#xd;
         &quot;sap_id&quot;: 99706211,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-29T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-29&quot;,&#xd;
@@ -1324,7 +1329,7 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
   &quot;elementsCount&quot;: 2,&#xd;
   &quot;elements&quot;: [&#xd;
     {&#xd;
-      &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
@@ -1332,7 +1337,7 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
         &quot;sap_id&quot;: ${sap_id},&#xd;
         &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
         &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -1392,15 +1397,15 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
       &quot;message_id_external&quot;: &quot;invoice-s4-f1e7676adb2e6a5a328d12d96c1ae4b31ba17c54&quot;&#xd;
     },&#xd;
     {&#xd;
-      &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
         &quot;sap_id&quot;: 99706141,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -1501,15 +1506,15 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
   &quot;elementsCount&quot;: 2,&#xd;
   &quot;elements&quot;: [&#xd;
     {&#xd;
-      &quot;send_date&quot;: &quot;2025-10-02T15:42:33.284393958&quot;,&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;MP&quot;,&#xd;
         &quot;sap_id&quot;: 99706181,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-17T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-17&quot;,&#xd;
@@ -1569,15 +1574,15 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
       &quot;message_id_external&quot;: &quot;invoice-s4-f1e7676adb2e6a5a328d12d96c1ae4b31ba17c54&quot;&#xd;
     },&#xd;
     {&#xd;
-      &quot;send_date&quot;: &quot;2025-10-02T15:42:34.281613896&quot;,&#xd;
+      &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
       &quot;document&quot;: {&#xd;
         &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
         &quot;site_id&quot;: &quot;MLB&quot;,&#xd;
         &quot;bill_society&quot;: &quot;ALM&quot;,&#xd;
         &quot;sap_id&quot;: 99706141,&#xd;
-        &quot;date_created&quot;: &quot;2025-10-02T00:00:00&quot;,&#xd;
-        &quot;doc_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
-        &quot;account_date&quot;: &quot;2025-08-04T00:00:00&quot;,&#xd;
+        &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
+        &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
+        &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
         &quot;fisc_year&quot;: 2025,&#xd;
         &quot;label&quot;: &quot;&quot;,&#xd;
         &quot;head_text&quot;: &quot;Conciliacion 2025-08-04&quot;,&#xd;
@@ -1993,9 +1998,10 @@ vars.put(&apos;sap_id_last&apos;, String.valueOf(first + block - 1)) // optional
         <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
         <stringProp name="ThreadGroup.duration">${testTime}</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <stringProp name="LoopController.loops">1</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
       </ThreadGroup>
@@ -2028,7 +2034,7 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_8" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1 /http/invoice_fbi_S4 _sap_id_4">
           <stringProp name="TestPlan.comments">Created from cURL on 2025-11-05T12:31:14.5979401</stringProp>
           <stringProp name="HTTPSampler.domain">is-test-mercadolibre.it-cpi019-rt.cfapps.us10-002.hana.ondemand.com</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
@@ -2043,10 +2049,10 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
     &quot;batchId&quot;: &quot;${__UUID()}&quot;,&#xd;
-    &quot;elementsCount&quot;: 8,&#xd;
+    &quot;elementsCount&quot;: 4,&#xd;
     &quot;elements&quot;: [&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:45.987994392&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
@@ -2054,7 +2060,7 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
                 &quot;sap_id&quot;: ${sap_id_1},&#xd;
                 &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
                 &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2026,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
@@ -2093,62 +2099,15 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
             &quot;message_id_external&quot;: &quot;1_performanceMx-s4-${__UUID()}&quot;&#xd;
         },&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:45.987994392&quot;,&#xd;
-            &quot;document&quot;: {&#xd;
-                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
-                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
-                &quot;bill_society&quot;: &quot;POS&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_2},&#xd;
-                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
-                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
-                &quot;fisc_year&quot;: 2026,&#xd;
-                &quot;label&quot;: &quot;&quot;,&#xd;
-                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
-                &quot;currency&quot;: &quot;USD&quot;,&#xd;
-                &quot;doc_type&quot;: &quot;FO&quot;,&#xd;
-                &quot;store_id&quot;: &quot;&quot;,&#xd;
-                &quot;cancellation&quot;: &quot;&quot;,&#xd;
-                &quot;line_item&quot;: [&#xd;
-                    {&#xd;
-                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487609&quot;,&#xd;
-                        &quot;user_id&quot;: 3054506184,&#xd;
-                        &quot;ref_key1&quot;: &quot;POS&quot;,&#xd;
-                        &quot;ref_key2&quot;: &quot;4809487609&quot;,&#xd;
-                        &quot;ref_key3&quot;: &quot;FO&quot;&#xd;
-                    },&#xd;
-                    {&#xd;
-                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
-                        &quot;charge_type&quot;: &quot;CV&quot;,&#xd;
-                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
-                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487609&quot;,&#xd;
-                        &quot;division&quot;: &quot;ML&quot;,&#xd;
-                        &quot;user_id&quot;: 3054506184,&#xd;
-                        &quot;ref_key1&quot;: &quot;CV&quot;&#xd;
-                    }&#xd;
-                ],&#xd;
-                &quot;data_id&quot;: &quot;4809487609-1&quot;,&#xd;
-                &quot;bill_b&quot;: 0&#xd;
-            },&#xd;
-            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;2_performanceMx-s4-${__UUID()}&quot;&#xd;
-        },&#xd;
-        {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:39.183792726&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
                 &quot;bill_society&quot;: &quot;PRE&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_3},&#xd;
+                &quot;sap_id&quot;: ${sap_id_2},&#xd;
                 &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
                 &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2026,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
@@ -2196,18 +2155,18 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
                 &quot;bill_b&quot;: 0&#xd;
             },&#xd;
             &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;3_performanceMx-s4-${__UUID()}&quot;&#xd;
+            &quot;message_id_external&quot;: &quot;2_performanceMx-s4-${__UUID()}&quot;&#xd;
         },&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:38.311359725&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
                 &quot;bill_society&quot;: &quot;PRE&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_4},&#xd;
+                &quot;sap_id&quot;: ${sap_id_3},&#xd;
                 &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
                 &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2026,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
@@ -2244,160 +2203,18 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
                 &quot;bill_b&quot;: 0&#xd;
             },&#xd;
             &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;4_performanceMx-s4-${__UUID()}&quot;&#xd;
+            &quot;message_id_external&quot;: &quot;3_performanceMx-s4-${__UUID()}&quot;&#xd;
         },&#xd;
         {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:38.311359725&quot;,&#xd;
+            &quot;send_date&quot;: &quot;${send_date}&quot;,&#xd;
             &quot;document&quot;: {&#xd;
                 &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
                 &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
-                &quot;bill_society&quot;: &quot;PRE&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_5},&#xd;
+                &quot;bill_society&quot;: &quot;ADS&quot;,&#xd;
+                &quot;sap_id&quot;: ${sap_id_4},&#xd;
                 &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
                 &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
-                &quot;fisc_year&quot;: 2026,&#xd;
-                &quot;label&quot;: &quot;&quot;,&#xd;
-                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
-                &quot;currency&quot;: &quot;USD&quot;,&#xd;
-                &quot;doc_type&quot;: &quot;NO&quot;,&#xd;
-                &quot;store_id&quot;: &quot;&quot;,&#xd;
-                &quot;cancellation&quot;: &quot;&quot;,&#xd;
-                &quot;line_item&quot;: [&#xd;
-                    {&#xd;
-                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.68&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.68&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487914&quot;,&#xd;
-                        &quot;user_id&quot;: 2940293691,&#xd;
-                        &quot;ref_key1&quot;: &quot;PRE&quot;,&#xd;
-                        &quot;ref_key2&quot;: &quot;4809487914&quot;,&#xd;
-                        &quot;ref_key3&quot;: &quot;NO&quot;,&#xd;
-                        &quot;bill_origin&quot;: 24434565302026&#xd;
-                    },&#xd;
-                    {&#xd;
-                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
-                        &quot;charge_type&quot;: &quot;BV&quot;,&#xd;
-                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
-                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.68&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.68&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487914&quot;,&#xd;
-                        &quot;division&quot;: &quot;ML&quot;,&#xd;
-                        &quot;user_id&quot;: 2940293691,&#xd;
-                        &quot;ref_key1&quot;: &quot;BV&quot;&#xd;
-                    }&#xd;
-                ],&#xd;
-                &quot;data_id&quot;: &quot;4809487914-1&quot;,&#xd;
-                &quot;bill_b&quot;: 0&#xd;
-            },&#xd;
-            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;5_performanceMx-s4-${__UUID()}&quot;&#xd;
-        },&#xd;
-        {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:45.987994392&quot;,&#xd;
-            &quot;document&quot;: {&#xd;
-                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
-                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
-                &quot;bill_society&quot;: &quot;POS&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_6},&#xd;
-                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
-                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
-                &quot;fisc_year&quot;: 2026,&#xd;
-                &quot;label&quot;: &quot;&quot;,&#xd;
-                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
-                &quot;currency&quot;: &quot;USD&quot;,&#xd;
-                &quot;doc_type&quot;: &quot;FI&quot;,&#xd;
-                &quot;store_id&quot;: &quot;&quot;,&#xd;
-                &quot;cancellation&quot;: &quot;&quot;,&#xd;
-                &quot;line_item&quot;: [&#xd;
-                    {&#xd;
-                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487610&quot;,&#xd;
-                        &quot;user_id&quot;: 91000000313,&#xd;
-                        &quot;ref_key1&quot;: &quot;POS&quot;,&#xd;
-                        &quot;ref_key2&quot;: &quot;4809487610&quot;,&#xd;
-                        &quot;ref_key3&quot;: &quot;FI&quot;&#xd;
-                    },&#xd;
-                    {&#xd;
-                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
-                        &quot;charge_type&quot;: &quot;CV&quot;,&#xd;
-                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
-                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487610&quot;,&#xd;
-                        &quot;division&quot;: &quot;ML&quot;,&#xd;
-                        &quot;user_id&quot;: 91000000313,&#xd;
-                        &quot;ref_key1&quot;: &quot;CV&quot;&#xd;
-                    }&#xd;
-                ],&#xd;
-                &quot;data_id&quot;: &quot;4809487610-1&quot;,&#xd;
-                &quot;bill_b&quot;: 0&#xd;
-            },&#xd;
-            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;6_performanceMx-s4-${__UUID()}&quot;&#xd;
-        },&#xd;
-        {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:45.987994392&quot;,&#xd;
-            &quot;document&quot;: {&#xd;
-                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
-                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
-                &quot;bill_society&quot;: &quot;POS&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_7},&#xd;
-                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
-                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
-                &quot;fisc_year&quot;: 2026,&#xd;
-                &quot;label&quot;: &quot;&quot;,&#xd;
-                &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
-                &quot;currency&quot;: &quot;USD&quot;,&#xd;
-                &quot;doc_type&quot;: &quot;FO&quot;,&#xd;
-                &quot;store_id&quot;: &quot;&quot;,&#xd;
-                &quot;cancellation&quot;: &quot;&quot;,&#xd;
-                &quot;line_item&quot;: [&#xd;
-                    {&#xd;
-                        &quot;acc_key&quot;: &quot;S&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487611&quot;,&#xd;
-                        &quot;user_id&quot;: 3054506184,&#xd;
-                        &quot;ref_key1&quot;: &quot;POS&quot;,&#xd;
-                        &quot;ref_key2&quot;: &quot;4809487611&quot;,&#xd;
-                        &quot;ref_key3&quot;: &quot;FO&quot;&#xd;
-                    },&#xd;
-                    {&#xd;
-                        &quot;bu&quot;: &quot;CORE&quot;,&#xd;
-                        &quot;charge_type&quot;: &quot;CV&quot;,&#xd;
-                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
-                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;0.86&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487611&quot;,&#xd;
-                        &quot;division&quot;: &quot;ML&quot;,&#xd;
-                        &quot;user_id&quot;: 3054506184,&#xd;
-                        &quot;ref_key1&quot;: &quot;CV&quot;&#xd;
-                    }&#xd;
-                ],&#xd;
-                &quot;data_id&quot;: &quot;4809487611-1&quot;,&#xd;
-                &quot;bill_b&quot;: 0&#xd;
-            },&#xd;
-            &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;7_performanceMx-s4-${__UUID()}&quot;&#xd;
-        },&#xd;
-        {&#xd;
-            &quot;send_date&quot;: &quot;2026-05-11T02:00:39.183792726&quot;,&#xd;
-            &quot;document&quot;: {&#xd;
-                &quot;obj_sys&quot;: &quot;ZSITE&quot;,&#xd;
-                &quot;site_id&quot;: &quot;MLM&quot;,&#xd;
-                &quot;bill_society&quot;: &quot;PRE&quot;,&#xd;
-                &quot;sap_id&quot;: ${sap_id_8},&#xd;
-                &quot;date_created&quot;: &quot;${date_created}&quot;,&#xd;
-                &quot;doc_date&quot;: &quot;${doc_date}&quot;,&#xd;
-                &quot;account_date&quot;: &quot;2026-05-10T00:00:00&quot;,&#xd;
+                &quot;account_date&quot;: &quot;${account_date}&quot;,&#xd;
                 &quot;fisc_year&quot;: 2026,&#xd;
                 &quot;label&quot;: &quot;&quot;,&#xd;
                 &quot;head_text&quot;: &quot;Conciliacion 2026-05-10&quot;,&#xd;
@@ -2408,44 +2225,32 @@ log.info(&quot;Initialized GLOBAL_SAP_ID_COUNTER to: &quot; + initialSapId)</str
                 &quot;line_item&quot;: [&#xd;
                     {&#xd;
                         &quot;acc_key&quot;: &quot;S&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;178.70&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;178.70&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487675&quot;,&#xd;
-                        &quot;user_id&quot;: 366313160,&#xd;
-                        &quot;ref_key1&quot;: &quot;PRE&quot;,&#xd;
-                        &quot;ref_key2&quot;: &quot;4809487675&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4194730322&quot;,&#xd;
+                        &quot;user_id&quot;: 3134271420,&#xd;
+                        &quot;ref_key1&quot;: &quot;ADS&quot;,&#xd;
+                        &quot;ref_key2&quot;: &quot;4194730322&quot;,&#xd;
                         &quot;ref_key3&quot;: &quot;FC&quot;&#xd;
                     },&#xd;
                     {&#xd;
                         &quot;bu&quot;: &quot;CORE&quot;,&#xd;
-                        &quot;charge_type&quot;: &quot;CV&quot;,&#xd;
-                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
+                        &quot;charge_type&quot;: &quot;CSPADS&quot;,&#xd;
+                        &quot;combo&quot;: &quot;GENERIC&quot;,&#xd;
                         &quot;acc_key&quot;: &quot;H&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;26.70&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;26.70&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487675&quot;,&#xd;
+                        &quot;amount_doc&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;amount_base&quot;: &quot;580.00&quot;,&#xd;
+                        &quot;assignment&quot;: &quot;4194730322&quot;,&#xd;
                         &quot;division&quot;: &quot;ML&quot;,&#xd;
-                        &quot;user_id&quot;: 366313160,&#xd;
-                        &quot;ref_key1&quot;: &quot;CV&quot;&#xd;
-                    },&#xd;
-                    {&#xd;
-                        &quot;bu&quot;: &quot;SHIPPING&quot;,&#xd;
-                        &quot;charge_type&quot;: &quot;CXD&quot;,&#xd;
-                        &quot;combo&quot;: &quot;GOLD_SPECIAL&quot;,&#xd;
-                        &quot;acc_key&quot;: &quot;H&quot;,&#xd;
-                        &quot;amount_doc&quot;: &quot;152.00&quot;,&#xd;
-                        &quot;amount_base&quot;: &quot;152.00&quot;,&#xd;
-                        &quot;assignment&quot;: &quot;4809487675&quot;,&#xd;
-                        &quot;division&quot;: &quot;ML&quot;,&#xd;
-                        &quot;user_id&quot;: 366313160,&#xd;
-                        &quot;ref_key1&quot;: &quot;CXD&quot;&#xd;
+                        &quot;user_id&quot;: 3134271420,&#xd;
+                        &quot;ref_key1&quot;: &quot;CSPADS&quot;&#xd;
                     }&#xd;
                 ],&#xd;
-                &quot;data_id&quot;: &quot;4809487675-1&quot;,&#xd;
+                &quot;data_id&quot;: &quot;4194730322-10&quot;,&#xd;
                 &quot;bill_b&quot;: 0&#xd;
             },&#xd;
             &quot;source&quot;: &quot;Provifaz IT SAP S4&quot;,&#xd;
-            &quot;message_id_external&quot;: &quot;8_performanceMx-s4-${__UUID()}&quot;&#xd;
+            &quot;message_id_external&quot;: &quot;4_performanceMx-s4-${__UUID()}&quot;&#xd;
         }&#xd;
     ]&#xd;
 }</stringProp>
@@ -2484,14 +2289,17 @@ def counter = (AtomicLong) props.get(&apos;GLOBAL_SAP_ID_COUNTER&apos;)
 if (counter == null) {
     throw new IllegalStateException(&quot;[SAP_ID v2] GLOBAL_SAP_ID_COUNTER not initialized â€” init sampler did not run.&quot;)
 }
-def batchSize = 8
+def batchSize = 4
 def startSapId = counter.getAndAdd(batchSize)
 
 for (int i = 0; i &lt; batchSize; i++) {
     vars.put(&quot;sap_id_&quot; + (i + 1), (startSapId + i).toString())
 }
 
-log.info(&quot;Reserved sap_id block: &quot; + startSapId + &quot;..&quot; + (startSapId + batchSize - 1))</stringProp>
+log.info(&quot;Reserved sap_id block: &quot; + startSapId + &quot;..&quot; + (startSapId + batchSize - 1))
+
+// Set send_date to current ISO timestamp (one value per request)
+vars.put(&apos;send_date&apos;, java.time.LocalDateTime.now().toString())</stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223PreProcessor>
           <hashTree/>

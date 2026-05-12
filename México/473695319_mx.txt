@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "id": 473695319,
+    "entity_type_id": 52,
+    "status": "RECEIVED",
+    "batch_id": 190593335229,
+    "last_updated": "2026-04-16T08:29:50",
+    "date_created": "2026-04-16T08:26:53",
+    "identifier": "invoice-s4-0e553ea36142286516ccf5f532dbf45918b53255",
+    "batch_version": 1,
+    "range_identifier": "MLM",
+    "client_identifier": "4194730322-10"
+  },
+  "data": {
+    "message": {
+      "send_date": "2026-04-16T08:26:52.629765497",
+      "document": {
+        "obj_sys": "ZSITE",
+        "site_id": "MLM",
+        "bill_society": "ADS",
+        "sap_id": 15077450510,
+        "date_created": "2026-04-16T00:00:00",
+        "doc_date": "2026-01-16T00:00:00",
+        "account_date": "2026-04-16T00:00:00",
+        "fisc_year": 2026,
+        "label": "",
+        "head_text": "Conciliacion 2026-01-16",
+        "currency": "MXN",
+        "doc_type": "FC",
+        "store_id": "",
+        "cancellation": "",
+        "line_item": [
+          {
+            "acc_key": "S",
+            "amount_doc": "580.00",
+            "amount_base": "580.00",
+            "assignment": "4194730322",
+            "user_id": 3134271420,
+            "ref_key1": "ADS",
+            "ref_key2": "4194730322",
+            "ref_key3": "FC"
+          },
+          {
+            "bu": "CORE",
+            "charge_type": "CSPADS",
+            "combo": "GENERIC",
+            "acc_key": "H",
+            "amount_doc": "580.00",
+            "amount_base": "580.00",
+            "assignment": "4194730322",
+            "division": "ML",
+            "user_id": 3134271420,
+            "ref_key1": "CSPADS"
+          }
+        ],
+        "data_id": "4194730322-10",
+        "bill_b": 0
+      },
+      "source": "Provifaz IT SAP S4",
+      "message_id_external": "invoice-s4-0e553ea36142286516ccf5f532dbf45918b53255"
+    }
+  }
+}
