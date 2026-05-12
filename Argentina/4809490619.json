@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "id": 5780761686,
+    "entity_type_id": 42,
+    "status": "RECEIVED",
+    "batch_id": 192719618045,
+    "last_updated": "2026-05-10T23:08:10",
+    "date_created": "2026-05-10T23:05:36",
+    "identifier": "invoice-s4-cc65ea37a3daf095ff09073074c2b974a9094f99",
+    "batch_version": 1,
+    "range_identifier": "MLA",
+    "client_identifier": "4809490619-0"
+  },
+  "data": {
+    "message": {
+      "send_date": "2026-05-10T23:05:34.731364047",
+      "document": {
+        "obj_sys": "ZSITE",
+        "site_id": "MLA",
+        "bill_society": "CFP",
+        "sap_id": 2987165650,
+        "date_created": "2026-05-11T00:00:00",
+        "doc_date": "2026-05-10T00:00:00",
+        "account_date": "2026-05-10T00:00:00",
+        "fisc_year": 2026,
+        "label": "",
+        "head_text": "Conciliacion 2026-05-10",
+        "currency": "ARS",
+        "doc_type": "FC",
+        "store_id": "0080",
+        "cancellation": "",
+        "line_item": [
+          {
+            "acc_key": "S",
+            "amount_doc": "5955.00",
+            "amount_base": "5955.00",
+            "assignment": "4809490619",
+            "user_id": 147688640,
+            "ref_key1": "CFP",
+            "ref_key2": "4809490619",
+            "ref_key3": "FC"
+          },
+          {
+            "bu": "MP",
+            "charge_type": "CFPOFF",
+            "combo": "GENERIC",
+            "acc_key": "H",
+            "amount_doc": "5955.00",
+            "amount_base": "5955.00",
+            "tax_code": "D1",
+            "assignment": "4809490619",
+            "division": "MP",
+            "user_id": 147688640,
+            "ref_key1": "CFPOFF",
+            "point_name": "PROPATO DE CASTELLI M     ",
+            "point_city": "San isidro de lules",
+            "point_stdc1": "23000000000"
+          }
+        ],
+        "bill_b": 0
+      },
+      "source": "Provifaz IT SAP S4",
+      "message_id_external": "invoice-s4-cc65ea37a3daf095ff09073074c2b974a9094f99"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "id": 5781484843,
+    "entity_type_id": 42,
+    "status": "RECEIVED",
+    "batch_id": 192723015054,
+    "last_updated": "2026-05-11T00:05:19",
+    "date_created": "2026-05-11T00:00:51",
+    "identifier": "invoice-s4-6b246b163abff7a2e0a774a599d1a3998fc6d736",
+    "batch_version": 1,
+    "range_identifier": "MLA",
+    "client_identifier": "4809434359-0"
+  },
+  "data": {
+    "message": {
+      "send_date": "2026-05-11T00:00:50.752286385",
+      "document": {
+        "obj_sys": "ZSITE",
+        "site_id": "MLA",
+        "bill_society": "MP",
+        "sap_id": 2993776940,
+        "date_created": "2026-05-11T00:00:00",
+        "doc_date": "2026-05-10T00:00:00",
+        "account_date": "2026-05-10T00:00:00",
+        "fisc_year": 2026,
+        "label": "",
+        "head_text": "Conciliacion 2026-05-10",
+        "currency": "ARS",
+        "doc_type": "FC",
+        "store_id": "0070",
+        "cancellation": "",
+        "line_item": [
+          {
+            "acc_key": "S",
+            "amount_doc": "2935.80",
+            "amount_base": "2935.80",
+            "assignment": "4809434359",
+            "user_id": 233411015,
+            "ref_key1": "MP",
+            "ref_key2": "4809434359",
+            "ref_key3": "FC"
+          },
+          {
+            "bu": "MP",
+            "charge_type": "CPMTP",
+            "combo": "GENERIC",
+            "acc_key": "H",
+            "amount_doc": "2935.80",
+            "amount_base": "2935.80",
+            "tax_code": "D1",
+            "assignment": "4809434359",
+            "division": "MP",
+            "user_id": 233411015,
+            "ref_key1": "CPMTP"
+          }
+        ],
+        "bill_b": 1
+      },
+      "source": "Provifaz IT SAP S4",
+      "message_id_external": "invoice-s4-6b246b163abff7a2e0a774a599d1a3998fc6d736"
+    }
+  }
+}
