@@ -98,7 +98,7 @@
 // and shared across all threads, so the counter is never reset mid-test and ids never repeat.
 import java.util.concurrent.atomic.AtomicLong
 
-def initialSapId = ${initialSapId}L
+def initialSapId = vars.get(&apos;initialSapId&apos;).toLong()
 synchronized (props) {
     if (props.get(&apos;sap_id_atomic&apos;) == null) {
         props.put(&apos;sap_id_atomic&apos;, new AtomicLong(initialSapId))
@@ -706,7 +706,7 @@ vars.put(&apos;send_date&apos;, java.time.LocalDateTime.now().toString())</strin
 // is never reset mid-test and ids never repeat.
 import java.util.concurrent.atomic.AtomicLong
 
-def initialSapId = ${initialSapId}L
+def initialSapId = vars.get(&apos;initialSapId&apos;).toLong()
 synchronized (props) {
     if (props.get(&apos;sap_id_atomic&apos;) == null) {
         props.put(&apos;sap_id_atomic&apos;, new AtomicLong(initialSapId))
@@ -1017,7 +1017,7 @@ vars.put(&apos;send_date&apos;, java.time.LocalDateTime.now().toString())</strin
 // and shared across all threads, so the counter is never reset mid-test and ids never repeat.
 import java.util.concurrent.atomic.AtomicLong
 
-def initialSapId = ${initialSapId}L
+def initialSapId = vars.get(&apos;initialSapId&apos;).toLong()
 synchronized (props) {
     if (props.get(&apos;sap_id_atomic&apos;) == null) {
         props.put(&apos;sap_id_atomic&apos;, new AtomicLong(initialSapId))
